@@ -9,7 +9,7 @@ public class JDBCUtil_Test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		// getConnection() : static     <== 객체화 후 호출, 클래스 이름으로 호출 
+		// getConnecti   on() : static     <== 객체화 후 호출, 클래스 이름으로 호출 
 		//1. 클래스명으로 메소드 호출 : static 
 
 		Connection conn = null; 
