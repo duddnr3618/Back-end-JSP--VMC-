@@ -22,9 +22,10 @@ public class BoardDAO {
 	//SQL 쿼리를 상수로 정의후에 각각 필요한 메소드에서 사용  
 	private final String BOARD_INSERT = 
 			"insert into board (seq,title,write,content) values ((select nvl(max(seq),0) + 1 from board), ?,?,?)"; 
-	private final String BOARD_UPDATE = ""; 
+	private final String BOARD_UPDATE = "update board set title = ? , content = ? where seq = ?"; 
 	private final String BOARD_DELETE = ""; 
-	private final String BOARD_GET = ""; 
+	private final String BOARD_GET = "select * from board where seq = ?"; 
+	private final String BOARD_ADD_CNT = "UPDATE board SET cnt = (SELECT cnt+1 FROM board WHERE seq = ?) WHERE seq=?"; 
 	private final String BOARD_LIST = "select * from board order by seq desc"; 
 	
 	
@@ -62,10 +63,90 @@ public class BoardDAO {
 	}
 	
 	//2.UPDATE
+	//BOARD_UPDATE = "update board set title = ? , content = ? where seq = ?"; 
+	public void updateBoard(BoardDTO dto) {
+		System.out.println("updateBoard 메소드 호출");
+		
+		try {
+			System.out.println("업데이트 성공");
+			conn = JDBCUtil.getConnection();
+			pstmt = conn.prepareStatement(BOARD_UPDATE);
+			pstmt.setString(1,dto.getTitle());
+			pstmt.setString(2,dto.getContent());
+			pstmt.setInt(3,dto.getSeq());
+			
+			pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("업데이트 실패");
+		}finally {
+			JDBCUtil.close(pstmt, conn);
+		}
+	}
 	
 	//3.DELETE
 	
-	//4.상세페이지(GET) : 레코드 1개
+	//4.상세페이지(GET) : 레코드 1개 : 리턴타입 BoardDTO
+	//select * from board where seq = ?;
+	public BoardDTO getBoard (BoardDTO dto) {
+		BoardDTO board = new BoardDTO();
+		
+		//조회수 늘리는 메소드
+		addCNT(dto);
+		
+		try {
+			conn = JDBCUtil.getConnection();
+			pstmt = conn.prepareStatement(BOARD_GET);
+			pstmt.setInt(1, dto.getSeq());
+			rs= pstmt.executeQuery();
+			
+			while (rs.next()) {
+				board.setSeq(rs.getInt("SEQ"));
+				board.setTitle(rs.getString("TITLE"));
+				board.setWrite(rs.getString("WRITE"));
+				board.setContent(rs.getString("CONTENT"));
+				board.setRegdate(rs.getDate("REGDATE"));
+				board.setCnt(rs.getInt("CNT"));
+				
+			}
+			System.out.println("Board 테이블에서 상세 레코드가 처리 완료");
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Board 테이블에서 상세 레코드 처리 실패");
+		}finally {
+			JDBCUtil.close(rs, pstmt, conn);	
+		}
+		
+		return board;
+	}
+	
+	//조회수 증가 메소드
+	public void addCNT (BoardDTO dto ) {
+		try {
+			conn=JDBCUtil.getConnection();
+			pstmt = conn.prepareStatement(BOARD_ADD_CNT);
+			pstmt.setInt(1,dto.getSeq());
+			pstmt.setInt(2,dto.getSeq());
+			
+			pstmt.executeUpdate();		//insert , update , delete
+			
+			System.out.println("조회수 증가 성공");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("조회수 증가 실패");
+			
+		}finally {
+			JDBCUtil.close(pstmt, conn);
+			
+		}
+			
+			
+		
+	}
+	
 	
 	//5.리스트 페이지(BOARD LIST) : 레코드 여러개
 	public List<BoardDTO> getBoardList(BoardDTO dto) {
@@ -107,11 +188,6 @@ public class BoardDAO {
 	
 	return boardList;	//boardList : board테이블의 각각의 레코드를 dto에 담아서 boardList에 저장
 	}
-	
-	
-	
-	
-	
 	
 
 }

@@ -115,10 +115,37 @@ public class MyController extends HttpServlet {
 			
 		} else if (path.equals("/getBoard.do")) {
 			System.out.println("getBoard.do 를 요청 했습니다. ");
-			// 게시판의 값을 읽어 올때 
+			// 게시판의 값을 읽어 올때 (글 상세)
+			//request.getParameter으로 넘어 오는 모든 변수의 변수는 String
+			// -> Intege.parameter(seq)
+			String seq = request.getParameter("seq");
+			
+			// 1.DTO에 seq 값을 setter주입
+			BoardDTO dto = new BoardDTO();
+			dto.setSeq(Integer.parseInt(seq));
+			
+			//2.DAO 객체에 getBoard(dto) 넣어서 호출 -> 리턴으로 dto를 받아온다
+			BoardDAO dao = new BoardDAO();
+			
+			//3.리턴으로 돌아오는 DTO값을 받을 변수 선언
+			BoardDTO board = new BoardDTO ();
+			board = dao.getBoard(dto);
+			
+			System.out.println(board);
+			
+			
+			// 4.session에 값을 저장후 뷰 페이지로 전달
+			//현재 클라이언트가 서버에 접속한 세션을 가지고온다
+			//세션에 변수에 DB에서 select한 DTO를 저장후 뷰 페이지로 전송
+			HttpSession session = request.getSession();
+			session.setAttribute("board", board);
+
+			response.sendRedirect("getBoard.jsp");
+			
 			
 		}else if (path.equals("/getBoardList.do")) {
 			System.out.println("getBoardList.do 를 요청 했습니다. ");
+			// 글 목록
 			
 			//1.DTO객체 생성
 			BoardDTO dto = new BoardDTO ();
@@ -128,7 +155,10 @@ public class MyController extends HttpServlet {
 			List<BoardDTO> boardList = new ArrayList<BoardDTO> ();
 			
 			//boarList에는 board테이블의 각 레코드를 dto에 저장후 boardList에 추가된 객체를 리턴
+			
+			System.out.println("요청 성공");
 			boardList = dao.getBoardList(dto);
+			System.out.println("요청 실패");
 			
 			//리턴받은 boardList를 클라이언트 뷰 페이지로 전송 -> Session에 리스트를 저장후 클라언트로 전송
 			//Session 변수선언 : 접속한 클라이언트에 고유하게 부여된 식별자가 서버 메모리에 할당
@@ -184,9 +214,37 @@ public class MyController extends HttpServlet {
 			
 			//4. 비즈니스로직 모두 처리후 view 페이지 이동 
 			response.sendRedirect("getUsersList.jsp"); 
-		}
-			
 		
+			
+		//글 수정 : update
+		}else if (path.equals("/updateBoard.do")) {
+			
+			System.out.println("/updateBoard.do 요청성공");
+
+			
+		//1.클라이언트에서 넘어오는 변수 값을 받음
+		String title = request.getParameter("title");
+		String content = request.getParameter("content");
+		String seq = request.getParameter("seq");
+		
+		System.out.println("넘버 변수 변환 : " + seq);
+		
+		//2.DTO에 Setter주입 
+		BoardDTO dto = new BoardDTO ();
+		dto.setTitle(title);
+		dto.setContent(content);
+		dto.setSeq(Integer.parseInt(seq));	// seq는 String -> int로 변환
+		
+		//3.DAO의 메소드 호출 : updateBoard(dto)
+		BoardDAO dao = new BoardDAO();
+		dao.updateBoard(dto);
+		
+		//4.뷰 페이지로 이동
+		response.sendRedirect("getBoardList.do");
+		
+		}
+		
+
 		
 	}
 

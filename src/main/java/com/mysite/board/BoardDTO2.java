@@ -22,8 +22,7 @@ public class BoardDTO2 {
 	  			 	
 	  			 	@Data : 모든것을 한꺼번에 생성 . 
 	
-	 */
-	
+	 */	
 	
 	private int seq; 
 	private String title; 

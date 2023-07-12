@@ -41,9 +41,15 @@ div {width:750px; margin:0 auto; }
 		%>
 		<tr>
 			<td><%= k.getSeq() %></td>
-			<td><%= k.getTitle() %></td>
+			
+			<!-- 제목에 링크를 걸어서 글의 상세페이지 출력(get방식) -->
+			<td><a href ="getBoard.do?seq=<%= k.getSeq() %>" >
+			<%= k.getTitle() %></a></td>
+			
 			<td><%= k.getWrite() %></td>
+			
 			<td><%= k.getRegdate() %></td>
+			
 			<td><%= k.getCnt() %></td>
 		 </tr>
 		<% 

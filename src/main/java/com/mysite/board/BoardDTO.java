@@ -13,11 +13,11 @@ public class BoardDTO {
 	
 		// ROMBOK 어노테이션을 이용해서 Getter / Setter / 기본 생성자 자동으로 생성 
 		
-	//DAO :      DataBase를 Insert/Update/Delete/Select 쿼리를 가지고 있는 객체  
+	//DAO : DataBase를 Insert/Update/Delete/Select 쿼리를 가지고 있는 객체  
 	
 	// MVC M2  : <== MVC로 개발 
 	
-	//    client ======dto========> Controller ==== dto ========> DAO   <======> DataBase
+	//client ======dto========> Controller ==== dto ========> DAO   <======> DataBase
 	
 	
 	//BOARD 테이블에 각 컬럼에 값을  저장할 dto 생성
